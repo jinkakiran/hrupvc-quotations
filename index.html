@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR UPVC - Quotation Generator</title>
+    <title>Quotation</title>
     <style>
-        /* --- SCREEN (EDIT MODE) STYLES --- */
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #222;
-            font-size: 11px;
-            line-height: 1.3;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #111;
+            font-size: 8.5pt;
+            line-height: 1.2;
             background-color: #f4f4f9;
-            padding: 20px;
+            padding: 10px;
             margin: 0;
         }
         .container {
-            max-width: 1122px; /* A4 Landscape width */
+            max-width: 1122px;
             margin: 0 auto;
             background: #fff;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: relative;
         }
@@ -27,8 +27,8 @@
         /* Controls Toolbar */
         .controls {
             text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
             background: #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: sticky;
@@ -36,9 +36,9 @@
             z-index: 1000;
         }
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             margin: 0 5px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             border: none;
@@ -46,15 +46,15 @@
         }
         .btn-add { background: #4CAF50; color: white; }
         .btn-print { background: #1a4a75; color: white; }
-        .btn-delete { background: #d9534f; color: white; padding: 2px 6px; font-size: 10px; cursor: pointer; border: none; border-radius: 3px;}
+        .btn-delete { background: #d9534f; color: white; padding: 2px 6px; font-size: 9px; cursor: pointer; border: none; border-radius: 3px;}
         
         .logo-upload-label {
             display: inline-block;
             background: #f39c12;
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             margin: 0 5px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
@@ -62,8 +62,8 @@
         input[type="file"] { display: none; }
 
         .type-select {
-            padding: 9px 15px;
-            font-size: 14px;
+            padding: 7px 12px;
+            font-size: 13px;
             font-weight: bold;
             border: 1px solid #1a4a75;
             border-radius: 4px;
@@ -72,30 +72,29 @@
             cursor: pointer;
         }
 
-        /* Dynamic Text Cells */
+        /* Interactive Cells */
         .cell-text {
             width: 100%;
-            padding: 4px;
+            padding: 2px;
             border: 1px solid #ccc;
-            border-radius: 3px;
-            box-sizing: border-box;
-            min-height: 22px;
+            border-radius: 2px;
+            min-height: 18px;
             word-wrap: break-word; 
             text-align: center;
             background: #fff;
             outline: none;
+            font-size: 8pt;
         }
         .cell-text.left-align { text-align: left; }
-        .cell-text:focus { border-color: #4CAF50; box-shadow: 0 0 3px rgba(76, 175, 80, 0.5); }
+        .cell-text:focus { border-color: #4CAF50; }
         
         input[type="number"] {
             width: 100%;
-            padding: 4px;
+            padding: 2px;
             border: 1px solid #ccc;
-            border-radius: 3px;
+            border-radius: 2px;
             font-family: inherit;
-            font-size: inherit;
-            box-sizing: border-box;
+            font-size: 8pt;
             text-align: right;
         }
 
@@ -103,94 +102,89 @@
             background-color: #f0f0f0; 
             font-weight: bold; 
             text-align: right;
-            padding: 4px;
+            padding: 2px;
             border: 1px solid #ccc;
-            border-radius: 3px;
+            font-size: 8pt;
         }
         
         .dynamic-profile-input {
             display: inline-block;
             font-weight: bold;
-            font-size: 10pt;
+            font-size: 9.5pt;
             text-align: center;
             background: #f0f0f0;
             border: 1px solid #ccc;
-            padding: 4px 8px;
-            margin-top: 6px;
+            padding: 3px 8px;
+            margin-top: 4px;
             min-width: 60%;
-            max-width: 95%;
             outline: none;
         }
 
         .editable-specs {
-            min-height: 100px;
-            padding: 10px;
+            min-height: 60px;
+            padding: 6px;
             border: 1px dashed #4CAF50;
             background-color: #fcfcfc;
-            font-size: 11pt;
-            line-height: 1.6;
+            font-size: 8.5pt;
+            line-height: 1.3;
             outline: none;
         }
-        .editable-specs:focus { border: 1px solid #4CAF50; background-color: #fff; }
 
-        /* --- DOCUMENT LAYOUT --- */
-        .header-table { width: 100%; table-layout: fixed; border-bottom: 2px solid #1a4a75; margin-bottom: 10px; padding-bottom: 10px; }
+        /* --- DOCUMENT STRUCTURE --- */
+        .header-table { width: 100%; table-layout: fixed; border-bottom: 2px solid #1a4a75; margin-bottom: 8px; padding-bottom: 6px; }
         .header-table td { vertical-align: top; word-wrap: break-word; }
-        .col-left { width: 33%; padding-right: 10px;}
-        .col-center { width: 34%; text-align: center; padding: 0 10px;}
-        .col-right { width: 33%; text-align: right; padding-left: 10px;}
+        .col-left { width: 32%; padding-right: 8px;}
+        .col-center { width: 36%; text-align: center; padding: 0 4px;}
+        .col-right { width: 32%; text-align: right; padding-left: 8px;}
         
-        .title-main { font-size: 16pt; font-weight: bold; color: #1a4a75; margin: 0 0 4px 0;}
-        .title-sub { font-size: 11pt; font-weight: bold; margin: 0 0 3px 0; color: #333; }
-        .company-name { font-size: 12pt; font-weight: bold; color: #1a4a75; }
+        .title-main { font-size: 14pt; font-weight: bold; color: #1a4a75; margin: 0 0 2px 0;}
+        .title-sub { font-size: 9.5pt; font-weight: bold; margin: 0 0 2px 0; color: #333; }
+        .company-name { font-size: 10.5pt; font-weight: bold; color: #1a4a75; }
         
-        .info-table { border-collapse: collapse; width: 100%; }
-        .info-table td { padding: 3px 2px; vertical-align: top; }
-        .info-label { font-weight: bold; white-space: nowrap; color: #444; width: 1%; padding-right: 5px;}
-        .colon { width: 1%; padding-right: 5px; font-weight: bold;}
+        .info-table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+        .info-table td { padding: 1px; vertical-align: top; }
+        .info-label { font-weight: bold; white-space: nowrap; color: #444; width: 70px; font-size: 8pt;}
+        .colon { width: 10px; font-weight: bold; text-align: center; }
+        .info-val-cell { width: auto; }
         
         .table-responsive {
             width: 100%;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .main-table { width: 100%; table-layout: fixed; border-collapse: collapse; min-width: 900px; }
-        .main-table th { background-color: #1a4a75; color: #fff; font-weight: bold; text-align: center; padding: 6px 2px; border: 1px solid #0f304f; }
-        .main-table td { border: 1px solid #ccc; padding: 2px; text-align: center; vertical-align: middle; word-wrap: break-word;}
+        .main-table { width: 100%; table-layout: fixed; border-collapse: collapse; min-width: 900px; margin-bottom: 8px; }
+        .main-table th { background-color: #1a4a75; color: #fff; font-weight: bold; text-align: center; padding: 5px 2px; border: 1px solid #0f304f; font-size: 7.5pt; }
+        .main-table td { border: 1px solid #ccc; padding: 2px; text-align: center; vertical-align: middle; word-wrap: break-word; font-size: 8pt;}
         
-        .layout-table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed;}
+        .layout-table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed;}
         .layout-table td { vertical-align: top; }
-        .layout-left { width: 62%; padding-right: 15px; }
-        .layout-right { width: 38%; }
+        .layout-left { width: 58%; padding-right: 12px; }
+        .layout-right { width: 42%; }
         
-        .totals-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed;}
-        .totals-table td { padding: 4px 8px; border: 1px solid #ccc; }
+        .totals-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; table-layout: fixed;}
+        .totals-table td { padding: 3px 5px; border: 1px solid #ccc; font-size: 8pt; }
         .totals-label { font-weight: bold; text-align: right; background-color: #eef2f5; color: #333; width: 55%;}
         .totals-value { text-align: right; font-weight: bold; width: 45%; background-color: #fff; }
         
-        .section-title { font-size: 10pt; font-weight: bold; color: #1a4a75; border-bottom: 1px solid #ccc; margin: 10px 0 5px 0; padding-bottom: 2px; }
-        .terms-list { list-style-type: none; padding: 0; margin: 0; }
-        .terms-list li { margin-bottom: 3px; }
+        .section-title { font-size: 9pt; font-weight: bold; color: #1a4a75; border-bottom: 1px solid #ccc; margin: 6px 0 3px 0; padding-bottom: 2px; }
+        .terms-list { list-style-type: none; padding: 0; margin: 0; font-size: 7pt; color: #333; }
+        .terms-list li { margin-bottom: 1px; }
         
-        .bank-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed;}
-        .bank-table th { background-color: #eef2f5; border: 1px solid #ccc; padding: 4px; text-align: left; width: 35%; }
-        .bank-table td { border: 1px solid #ccc; padding: 4px; word-wrap: break-word;}
+        .bank-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; table-layout: fixed;}
+        .bank-table th { background-color: #eef2f5; border: 1px solid #ccc; padding: 2px 4px; text-align: left; width: 35%; font-size: 7pt; }
+        .bank-table td { border: 1px solid #ccc; padding: 2px 4px; word-wrap: break-word; font-size: 7pt; }
         
-        .disclaimer-list { list-style-type: disc; padding-left: 15px; margin: 0; color: #c9302c; font-weight: bold;}
+        .disclaimer-list { list-style-type: disc; padding-left: 15px; margin: 0; color: #c9302c; font-weight: bold; font-size: 7pt; }
         
-        .signature-table { width: 100%; margin-top: 40px; margin-bottom: 20px; border-collapse: collapse; table-layout: fixed;}
-        .signature-table td { width: 50%; font-weight: bold; font-size: 10pt; }
-        
-        /* Dynamic flow section (No forced page breaks) */
-        .specs-section { padding-top: 10px; }
+        .signature-table { width: 100%; margin-top: 20px; margin-bottom: 10px; border-collapse: collapse; table-layout: fixed;}
+        .signature-table td { width: 50%; font-weight: bold; font-size: 8.5pt; }
         
         .print-only { display: none; }
         .watermark { display: none; }
         .global-seal { display: none; }
 
-        /* --- MOBILE SCREEN STYLES --- */
+        /* --- MOBILE SCREEN ADAPTATION --- */
         @media screen and (max-width: 800px) {
             body { padding: 5px; font-size: 14px; }
             .container { padding: 15px; }
@@ -207,35 +201,42 @@
             
             #companyLogo { float: none; display: block; margin-bottom: 10px; max-width: 100%; }
             .dynamic-profile-input { width: 100%; max-width: 100%; text-align: left; }
-            
-            .info-table td { font-size: 14px; }
-            .totals-table td, .bank-table td, .bank-table th { font-size: 14px; }
         }
 
-        /* --- PRINT (PDF) STYLES --- */
+        /* --- OFFICIAL PRINT (PDF) FORMATTING --- */
         @media print {
             @page {
-                size: A4 landscape;
-                margin: 5mm 8mm 15mm 8mm; 
+                size: A4 landscape; /* FORCES LANDSCAPE AUTOMATICALLY */
+                margin: 5mm 6mm 12mm 6mm; 
             }
-            body { background: #fff; padding: 0; font-size: 8pt; }
+            body { background: #fff; padding: 0; font-size: 7.5pt; }
             .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; background: transparent; }
             .no-print { display: none !important; }
             .print-only { display: inline !important; }
             
-            /* Prevent awkward slicing of blocks across pages */
-            .layout-table { page-break-inside: avoid; }
-            .specs-section { page-break-inside: avoid; }
-            .signature-table { page-break-inside: avoid; }
+            .main-table thead { display: table-header-group; }
             .main-table tr { page-break-inside: avoid; }
+            .layout-table { page-break-inside: avoid; }
+            .signature-table { page-break-inside: avoid; }
             
-            .header-table, .layout-table { display: table !important; }
-            .header-table tbody, .header-table tr, .header-table td, .layout-table tbody, .layout-table tr, .layout-table td { display: table-cell !important; }
-            .col-left { width: 33% !important; padding-right: 10px !important;}
-            .col-center { width: 34% !important; text-align: center !important; padding: 0 10px !important;}
-            .col-right { width: 33% !important; text-align: right !important; padding-left: 10px !important;}
-            .layout-left { width: 62% !important; padding-right: 15px !important;}
-            .layout-right { width: 38% !important; padding: 0 !important;}
+            /* FORCES CORPORATE 3-COLUMN HEADER DURING PRINT */
+            .header-table { display: table !important; width: 100% !important; }
+            .header-table tbody { display: table-row-group !important; }
+            .header-table tr { display: table-row !important; }
+            .header-table td { display: table-cell !important; }
+            
+            .col-left { width: 32% !important; padding-right: 8px !important;}
+            .col-center { width: 36% !important; text-align: center !important; padding: 0 4px !important;}
+            .col-right { width: 32% !important; text-align: right !important; padding-left: 8px !important;}
+            
+            .layout-table { display: table !important; width: 100% !important; }
+            .layout-table tbody { display: table-row-group !important; }
+            .layout-table tr { display: table-row !important; }
+            .layout-table td { display: table-cell !important; }
+            
+            .layout-left { width: 58% !important; padding-right: 12px !important;}
+            .layout-right { width: 42% !important; padding: 0 !important;}
+            
             #companyLogo { float: right !important; }
             .dynamic-profile-input { text-align: center !important; display: inline-block !important; width: auto !important;}
             .main-table { min-width: auto !important; }
@@ -246,9 +247,9 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%) rotate(-35deg);
-                font-size: 130pt;
+                font-size: 110pt;
                 font-weight: bold;
-                color: rgba(26, 74, 117, 0.05);
+                color: rgba(26, 74, 117, 0.04);
                 z-index: -100;
                 pointer-events: none;
                 white-space: nowrap;
@@ -261,12 +262,12 @@
                 left: 0;
                 right: 0;
                 text-align: center;
-                font-size: 7.5pt;
+                font-size: 6.5pt;
                 color: #555;
                 font-weight: bold;
                 letter-spacing: 1px;
                 border-top: 1px dashed #aaa;
-                padding-top: 5px;
+                padding-top: 2px;
                 background-color: #fff; 
                 z-index: 1000;
             }
@@ -279,21 +280,21 @@
                 appearance: none;
                 -moz-appearance: none;
                 -webkit-appearance: none;
-                color: #222;
+                color: #111;
                 font-size: 7.5pt; 
                 min-height: auto;
             }
-            .info-table .cell-text { font-size: 8pt; }
+            .info-table .cell-text { font-size: 7.5pt; }
             
-            .title-main { font-size: 14pt; }
-            .title-sub { font-size: 10pt; }
-            .company-name { font-size: 11pt; }
-            .info-table td { font-size: 8pt; }
-            .terms-list li, .bank-table th, .bank-table td { font-size: 7.5pt; }
+            .title-main { font-size: 13pt; }
+            .title-sub { font-size: 9pt; }
+            .company-name { font-size: 10pt; }
+            .info-table td { font-size: 7.5pt; }
+            .terms-list li, .bank-table th, .bank-table td { font-size: 6.8pt; }
 
             .editable-specs { border: none !important; padding: 0 !important; background-color: transparent !important; }
-            .main-table th { padding: 4px 1px; font-size: 7.5pt;}
-            .main-table td { padding: 2px 1px; }
+            .main-table th { padding: 3px 2px; font-size: 7pt;}
+            .main-table td { padding: 2px; }
             .action-col { display: none !important; }
         }
     </style>
@@ -317,21 +318,41 @@
         <button class="btn btn-add" onclick="addRow()">+ Add New Item Row</button>
         <button class="btn btn-print" onclick="saveAsPDF()">Save as PDF</button>
         
-        <p style="margin-top: 10px; font-weight: normal; color: #555;">Fill in your data and click Save as PDF.<br><strong style="color:#d9534f;">Mobile Note:</strong> Swipe left/right on the items table to see all columns.</p>
+        <p style="margin-top: 8px; font-weight: normal; color: #555; font-size: 12px;">Landscape printing forced automatically. Click Save as PDF.</p>
     </div>
 
     <div class="container">
-        <!-- HEADER -->
+        <!-- HEADER BLOCK -->
         <table class="header-table">
             <tr>
                 <td class="col-left">
                     <div class="title-sub">CLIENT DETAILS</div>
                     <table class="info-table">
-                        <tr><td class="info-label">Quotation No</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">MR/WTE/302/2026-27</div></td></tr>
-                        <tr><td class="info-label">Name</td><td class="colon">:</td><td><div contenteditable="plaintext-only" id="clientName" class="cell-text left-align">Axiscade company</div></td></tr>
-                        <tr><td class="info-label">Address</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
-                        <tr><td class="info-label">Project</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
-                        <tr><td class="info-label">Date</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">31-07-2026</div></td></tr>
+                        <tr>
+                            <td class="info-label">Quotation No</td>
+                            <td class="colon">:</td>
+                            <td class="info-val-cell"><div contenteditable="plaintext-only" class="cell-text left-align">MR/WTE/302/2026-27</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Name</td>
+                            <td class="colon">:</td>
+                            <td class="info-val-cell"><div contenteditable="plaintext-only" id="clientName" class="cell-text left-align">Axiscade company</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Address</td>
+                            <td class="colon">:</td>
+                            <td class="info-val-cell"><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Project</td>
+                            <td class="colon">:</td>
+                            <td class="info-val-cell"><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td>
+                        </tr>
+                        <tr>
+                            <td class="info-label">Date</td>
+                            <td class="colon">:</td>
+                            <td class="info-val-cell"><div contenteditable="plaintext-only" class="cell-text left-align">31-07-2026</div></td>
+                        </tr>
                     </table>
                 </td>
                 <td class="col-center">
@@ -340,10 +361,10 @@
                     <div contenteditable="plaintext-only" id="profileType" class="dynamic-profile-input" oninput="updateNote()">BYDEE BLACK COLOUR PROFILE</div>
                 </td>
                 <td class="col-right">
-                    <img id="companyLogo" style="max-width: 150px; max-height: 70px; display: none; margin-bottom: 10px; float: right;">
+                    <img id="companyLogo" style="max-width: 130px; max-height: 55px; display: none; margin-bottom: 4px; float: right;">
                     <div style="clear: both;"></div>
                     <div class="company-name">HR UPVC ENTERPRISES</div>
-                    <div style="margin-top:4px;">No. 326/122/1, Hosahalli Road, Near Muilk Dairy<br>
+                    <div style="margin-top:2px;">No. 326/122/1, Hosahalli Road, Near Muilk Dairy<br>
                     Kodagalahalli, Hosahalli<br>
                     Bangalore - 562157<br>
                     Contact :- 7075510108<br>
@@ -352,23 +373,23 @@
             </tr>
         </table>
 
-        <!-- Mobile Wrapper for Horizontal Scrolling -->
+        <!-- ITEMS TABLE -->
         <div class="table-responsive">
             <table class="main-table" id="itemsTable">
                 <thead>
                     <tr>
-                        <th style="width: 3%;">SL</th>
-                        <th style="width: 6%;">Window Code</th>
+                        <th style="width: 3%;">SL.NO</th>
+                        <th style="width: 7%;">Window Code</th>
                         <th style="width: 16%;">Profile & Window Type</th>
                         <th style="width: 9%;">PROFILE COLOUR</th>
-                        <th style="width: 5%;">Width<br>(mm)</th>
-                        <th style="width: 5%;">Height<br>(mm)</th>
-                        <th style="width: 5%;">Area<br>(Sqft)</th>
-                        <th style="width: 4%;">Qty<br>(Nos)</th>
-                        <th style="width: 6%;">Total Area<br>(Sqft)</th>
-                        <th style="width: 5%;">ALU.<br>Mesh</th>
-                        <th style="width: 8%;">Handle<br>Type</th>
-                        <th style="width: 8%;">Glass</th>
+                        <th style="width: 5%;">Width (mm)</th>
+                        <th style="width: 5%;">Height (mm)</th>
+                        <th style="width: 6%;">Area (Sqft)</th>
+                        <th style="width: 4%;">Qty (Nos)</th>
+                        <th style="width: 6%;">Total Area (Sqft)</th>
+                        <th style="width: 4%;">ALU.Mesh</th>
+                        <th style="width: 8%;">Handle Type</th>
+                        <th style="width: 7%;">Glass</th>
                         <th style="width: 6%;">BASE PRICE</th>
                         <th style="width: 7%;">Unit Price</th>
                         <th style="width: 7%;">Total Price</th>
@@ -407,12 +428,12 @@
             </table>
         </div>
 
-        <!-- TOTALS & T&C -->
+        <!-- TOTALS & T&C BLOCK -->
         <table class="layout-table">
             <tr>
                 <td class="layout-left">
-                    <div style="font-weight:bold; margin-bottom: 4px;">Note :- <span id="noteProfileText" style="color: #1a4a75;">BYDEE BLACK COLOUR PROFILE</span> IS CONSIDERED FOR THIS OFFER</div>
-                    <div style="font-weight:bold; margin-bottom: 8px; color: #1a4a75;">DUE TO THE FLUCTUATION OF RATES, THE ABOVE MENTIONED RATES ARE VALID ONLY FOR 7 DAYS</div>
+                    <div style="font-weight:bold; margin-bottom: 3px;">Note :- <span id="noteProfileText" style="color: #1a4a75;">BYDEE BLACK COLOUR PROFILE</span> IS CONSIDERED FOR THIS OFFER</div>
+                    <div style="font-weight:bold; margin-bottom: 5px; color: #1a4a75;">DUE TO THE FLUCTUATION OF RATES, THE ABOVE MENTIONED RATES ARE VALID ONLY FOR 7 DAYS</div>
                     
                     <div class="section-title">TERM AND CONDITIONS:</div>
                     <ul class="terms-list">
@@ -447,7 +468,7 @@
                         </tr>
                         <tr><td class="totals-label">Installation @ 20/sft</td><td class="totals-value" style="color:green;"><div contenteditable="plaintext-only" style="text-align: right; font-weight: bold; color: green; outline: none;">FREE</div></td></tr>
                         <tr><td class="totals-label">Transportation</td><td class="totals-value"><input type="number" id="val-transport" value="2000" style="font-weight: bold;" oninput="calculateAll()"></td></tr>
-                        <tr><td class="totals-label" style="font-size:10pt; color:#1a4a75; background:#dce6ef;">Grand Total Rs.:</td><td class="totals-value" id="final-grand" style="font-size:10pt; color:#1a4a75; background:#dce6ef;">0.00</td></tr>
+                        <tr><td class="totals-label" style="font-size:9pt; color:#1a4a75; background:#dce6ef;">Grand Total Rs.:</td><td class="totals-value" id="final-grand" style="font-size:9pt; color:#1a4a75; background:#dce6ef;">0.00</td></tr>
                     </table>
                     
                     <div class="section-title">Account Details:</div>
@@ -462,13 +483,13 @@
             </tr>
         </table>
 
-        <!-- Dynamic flowing specs (no forced page breaks) -->
+        <!-- SPECIFICATIONS BLOCK -->
         <div class="specs-section">
-            <div class="section-title" style="font-size: 14pt; margin-bottom: 15px; padding-bottom: 5px;">Specifications</div>
+            <div class="section-title" style="font-size: 9.5pt; margin-bottom: 5px; padding-bottom: 2px;">Specifications</div>
             
-            <p class="no-print" style="color: #4CAF50; font-weight: bold;">(Click inside the dashed box below to type or edit your specifications)</p>
+            <p class="no-print" style="color: #4CAF50; font-weight: bold; margin: 3px 0;">(Click inside the dashed box below to type or edit your specifications)</p>
             <div contenteditable="true" class="editable-specs">
-                <ul style="list-style-type: square; padding-left: 15px;">
+                <ul style="list-style-type: square; padding-left: 15px; margin: 0;">
                     <li>Clear Glass 5mm toughend</li>
                     <li>Alluminium track provide</li>
                     <li>Silicon Both Side provided</li>
@@ -479,8 +500,8 @@
                 </ul>
             </div>
             
-            <div style="padding: 15px; border: 1px dashed #d9534f; background-color: #fdf2f2; margin-bottom: 30px; margin-top: 20px;">
-                <ul class="disclaimer-list" style="font-size: 11pt; line-height: 1.6;">
+            <div style="padding: 5px; border: 1px dashed #d9534f; background-color: #fdf2f2; margin-bottom: 8px; margin-top: 6px;">
+                <ul class="disclaimer-list" style="font-size: 7pt; line-height: 1.2;">
                     <li>IF THERE IS ANY WALL CROSS WE ARE NOT RESPONSIBLE THAT.</li>
                     <li>WE ARE NOT FIX VENTILATOR EXHAUSTING FAN.</li>
                     <li>Inside silicon provide and outside only silicon provided labour extra charge.</li>
@@ -488,7 +509,7 @@
             </div>
         </div>
         
-        <!-- Final Signature Block (Appears once at the end of the document) -->
+        <!-- SIGNATURE BLOCK -->
         <table class="signature-table">
             <tr>
                 <td style="text-align: left; padding-left: 10px;">
@@ -501,20 +522,31 @@
         </table>
     </div>
 
-    <!-- --- JAVASCRIPT LOGIC --- -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
-        document.addEventListener('input', calculateAll);
+        document.addEventListener('input', () => {
+            calculateAll();
+            updateDocumentName();
+        });
 
-        // Save as PDF with Dynamic Naming and Mobile viewport trick
-        function saveAsPDF() {
+        function updateDocumentName() {
             let typeSelect = document.getElementById('quotationType').value;
             let fileNameSuffix = typeSelect === 'General' ? 'Quotation' : 'Final_Quotation';
             
-            let clientName = document.getElementById('clientName').innerText.trim().replace(/[^a-zA-Z0-9 -]/g, "") || "Client";
-            let profile = document.getElementById('profileType').innerText.trim().replace(/[^a-zA-Z0-9 -]/g, "") || "Profile";
+            let clientRaw = document.getElementById('clientName').innerText.trim() || "Client";
+            let clientName = clientRaw.replace(/[^a-zA-Z0-9]/g, "_");
             
-            let oldTitle = document.title;
-            document.title = `${clientName}_${profile}_${fileNameSuffix}`;
+            let profileRaw = document.getElementById('profileType').innerText.trim() || "Profile";
+            let profile = profileRaw.replace(/[^a-zA-Z0-9]/g, "_");
+            
+            let newTitle = `${clientName}_${profile}_${fileNameSuffix}`;
+            newTitle = newTitle.replace(/_+/g, '_');
+            
+            document.title = newTitle;
+        }
+
+        function saveAsPDF() {
+            updateDocumentName();
 
             let viewport = document.querySelector('meta[name="viewport"]');
             let originalContent = viewport.content;
@@ -523,7 +555,6 @@
             setTimeout(() => {
                 window.print();
                 setTimeout(() => {
-                    document.title = oldTitle;
                     viewport.content = originalContent;
                 }, 1000);
             }, 300);
@@ -532,6 +563,7 @@
         function updateQuotationType() {
             let type = document.getElementById('quotationType').value;
             document.getElementById('displayQuotationType').innerText = type === 'General' ? 'QUOTATION' : 'FINAL QUOTATION';
+            updateDocumentName();
         }
 
         function updateNote() {
@@ -633,6 +665,7 @@
         window.onload = () => {
             calculateAll();
             updateNote();
+            updateDocumentName();
         };
     </script>
 </body>
