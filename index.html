@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- CRUCIAL FOR MOBILE: Forces the browser to scale to the device width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR UPVC - Quotation Generator</title>
+    <style>
+        /* --- SCREEN (EDIT MODE) STYLES --- */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #222;
+            font-size: 11px;
+            line-height: 1.3;
+            background-color: #f4f4f9;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1122px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Controls Toolbar */
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        .btn-add { background: #4CAF50; color: white; }
+        .btn-print { background: #1a4a75; color: white; }
+        .btn-delete { background: #d9534f; color: white; padding: 2px 6px; font-size: 10px; cursor: pointer; border: none; border-radius: 3px;}
+        
+        .logo-upload-label {
+            display: inline-block;
+            background: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input[type="file"] { display: none; }
+
+        /* Dynamic Text Cells */
+        .cell-text {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            min-height: 22px;
+            word-wrap: break-word; 
+            text-align: center;
+            background: #fff;
+            outline: none;
+        }
+        .cell-text.left-align { text-align: left; }
+        .cell-text:focus { border-color: #4CAF50; box-shadow: 0 0 3px rgba(76, 175, 80, 0.5); }
+        
+        /* Number Inputs */
+        input[type="number"] {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: inherit;
+            box-sizing: border-box;
+            text-align: right;
+        }
+
+        .readonly-cell { 
+            background-color: #f0f0f0; 
+            font-weight: bold; 
+            text-align: right;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .dynamic-profile-input {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 10pt;
+            text-align: center;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            margin-top: 6px;
+            min-width: 60%;
+            max-width: 95%;
+            outline: none;
+        }
+
+        .editable-specs {
+            min-height: 100px;
+            padding: 10px;
+            border: 1px dashed #4CAF50;
+            background-color: #fcfcfc;
+            font-size: 11pt;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        /* --- DOCUMENT LAYOUT --- */
+        .header-table { width: 100%; table-layout: fixed; border-bottom: 2px solid #1a4a75; margin-bottom: 10px; padding-bottom: 10px; }
+        .header-table td { vertical-align: top; word-wrap: break-word; }
+        .col-left { width: 33%; padding-right: 10px;}
+        .col-center { width: 34%; text-align: center; padding: 0 10px;}
+        .col-right { width: 33%; text-align: right; padding-left: 10px;}
+        
+        .title-main { font-size: 16pt; font-weight: bold; color: #1a4a75; margin: 0 0 4px 0;}
+        .title-sub { font-size: 11pt; font-weight: bold; margin: 0 0 3px 0; color: #333; }
+        .company-name { font-size: 12pt; font-weight: bold; color: #1a4a75; }
+        
+        .info-table { border-collapse: collapse; width: 100%; }
+        .info-table td { padding: 3px 2px; vertical-align: top; }
+        .info-label { font-weight: bold; white-space: nowrap; color: #444; width: 1%; padding-right: 5px;}
+        .colon { width: 1%; padding-right: 5px; font-weight: bold;}
+        
+        /* Mobile Scroll Wrapper */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 10px;
+        }
+        
+        .main-table { width: 100%; table-layout: fixed; border-collapse: collapse; min-width: 900px; }
+        .main-table th { background-color: #1a4a75; color: #fff; font-weight: bold; text-align: center; padding: 6px 2px; border: 1px solid #0f304f; }
+        .main-table td { border: 1px solid #ccc; padding: 2px; text-align: center; vertical-align: middle; word-wrap: break-word;}
+        
+        .layout-table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed;}
+        .layout-table td { vertical-align: top; }
+        .layout-left { width: 62%; padding-right: 15px; }
+        .layout-right { width: 38%; }
+        
+        .totals-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed;}
+        .totals-table td { padding: 4px 8px; border: 1px solid #ccc; }
+        .totals-label { font-weight: bold; text-align: right; background-color: #eef2f5; color: #333; width: 55%;}
+        .totals-value { text-align: right; font-weight: bold; width: 45%; background-color: #fff; }
+        
+        .section-title { font-size: 10pt; font-weight: bold; color: #1a4a75; border-bottom: 1px solid #ccc; margin: 10px 0 5px 0; padding-bottom: 2px; }
+        .terms-list { list-style-type: none; padding: 0; margin: 0; }
+        .terms-list li { margin-bottom: 3px; }
+        
+        .bank-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed;}
+        .bank-table th { background-color: #eef2f5; border: 1px solid #ccc; padding: 4px; text-align: left; width: 35%; }
+        .bank-table td { border: 1px solid #ccc; padding: 4px; word-wrap: break-word;}
+        .disclaimer-list { list-style-type: disc; padding-left: 15px; margin: 0; color: #c9302c; font-weight: bold;}
+        
+        .signature-table { width: 100%; margin-top: 30px; margin-bottom: 20px; border-collapse: collapse; table-layout: fixed;}
+        .signature-table td { width: 50%; font-weight: bold; font-size: 10pt; }
+        
+        .page-break { page-break-before: always; padding-top: 20px; }
+        .print-only { display: none; }
+        .watermark { display: none; }
+        .global-seal { display: none; }
+
+        /* --- MOBILE SCREEN STYLES (Only affects screens under 800px) --- */
+        @media screen and (max-width: 800px) {
+            body { padding: 5px; font-size: 14px; }
+            .container { padding: 15px; }
+            .controls { display: flex; flex-direction: column; gap: 10px; }
+            .btn, .logo-upload-label { width: 100%; margin: 0; box-sizing: border-box; }
+            
+            /* Stack layout tables on mobile */
+            .header-table, .header-table tbody, .header-table tr, .header-table td { display: block; width: 100%; text-align: left; }
+            .col-left, .col-center, .col-right { width: 100%; padding: 0; margin-bottom: 15px; }
+            .col-center { text-align: left; }
+            
+            .layout-table, .layout-table tbody, .layout-table tr, .layout-table td { display: block; width: 100%; }
+            .layout-left, .layout-right { width: 100%; padding: 0; }
+            .layout-left { margin-bottom: 20px; }
+            
+            #companyLogo { float: none; display: block; margin-bottom: 10px; max-width: 100%; }
+            .dynamic-profile-input { width: 100%; max-width: 100%; text-align: left; }
+            
+            .info-table td { font-size: 14px; }
+            .totals-table td, .bank-table td, .bank-table th { font-size: 14px; }
+        }
+
+        /* --- PRINT (PDF) STYLES --- */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 5mm 8mm 15mm 8mm; 
+            }
+            body { background: #fff; padding: 0; font-size: 8pt; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; background: transparent; }
+            .no-print { display: none !important; }
+            .print-only { display: inline !important; }
+            
+            /* Reset Mobile overrides during print */
+            .header-table, .layout-table { display: table !important; }
+            .header-table tbody, .header-table tr, .header-table td, .layout-table tbody, .layout-table tr, .layout-table td { display: table-cell !important; }
+            .col-left { width: 33% !important; padding-right: 10px !important;}
+            .col-center { width: 34% !important; text-align: center !important; padding: 0 10px !important;}
+            .col-right { width: 33% !important; text-align: right !important; padding-left: 10px !important;}
+            .layout-left { width: 62% !important; padding-right: 15px !important;}
+            .layout-right { width: 38% !important; padding: 0 !important;}
+            #companyLogo { float: right !important; }
+            .dynamic-profile-input { text-align: center !important; display: inline-block !important; width: auto !important;}
+            .main-table { min-width: auto !important; }
+
+            .watermark {
+                display: block;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-35deg);
+                font-size: 130pt;
+                font-weight: bold;
+                color: rgba(26, 74, 117, 0.05);
+                z-index: -100;
+                pointer-events: none;
+                white-space: nowrap;
+            }
+
+            .global-seal {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 7.5pt;
+                color: #555;
+                font-weight: bold;
+                letter-spacing: 1px;
+                border-top: 1px dashed #aaa;
+                padding-top: 5px;
+                background-color: #fff; 
+                z-index: 1000;
+            }
+            
+            .cell-text, input[type="number"], .dynamic-profile-input, .readonly-cell {
+                border: none;
+                background: transparent;
+                padding: 0;
+                margin: 0;
+                appearance: none;
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                color: #222;
+                font-size: 7.5pt; 
+                min-height: auto;
+            }
+            .info-table .cell-text { font-size: 8pt; }
+            
+            .title-main { font-size: 14pt; }
+            .title-sub { font-size: 10pt; }
+            .company-name { font-size: 11pt; }
+            .info-table td { font-size: 8pt; }
+            .terms-list li, .bank-table th, .bank-table td { font-size: 7.5pt; }
+
+            .editable-specs { border: none !important; padding: 0 !important; background-color: transparent !important; }
+            .main-table th { padding: 4px 1px; font-size: 7.5pt;}
+            .main-table td { padding: 2px 1px; }
+            .action-col { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="watermark">HR UPVC</div>
+    <div class="global-seal">*** THIS IS A COMPUTER-GENERATED DOCUMENT AND DOES NOT REQUIRE A PHYSICAL SIGNATURE ***</div>
+
+    <div class="controls no-print">
+        <label class="logo-upload-label">
+            📁 Upload Logo
+            <input type="file" id="logoInput" accept="image/*" onchange="loadLogo(event)">
+        </label>
+        <button class="btn btn-add" onclick="addRow()">+ Add New Item Row</button>
+        <button class="btn btn-print" onclick="window.print()">Save as PDF</button>
+        <p style="margin-top: 10px; font-weight: normal; color: #555;">Fill in your data and click Save as PDF. <br><strong style="color:#d9534f;">Mobile Note:</strong> Swipe left/right on the items table to see all columns.</p>
+    </div>
+
+    <div class="container">
+        <table class="header-table">
+            <tr>
+                <td class="col-left">
+                    <div class="title-sub">CLIENT DETAILS</div>
+                    <table class="info-table">
+                        <tr><td class="info-label">Quotation No</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">MR/WTE/302/2026-27</div></td></tr>
+                        <tr><td class="info-label">Name</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Axiscade company</div></td></tr>
+                        <tr><td class="info-label">Address</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
+                        <tr><td class="info-label">Project</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
+                        <tr><td class="info-label">Date</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">31-07-2026</div></td></tr>
+                    </table>
+                </td>
+                <td class="col-center">
+                    <div class="title-main">QUOTATION</div>
+                    <div class="title-sub">uPVC Doors & Windows</div>
+                    <div contenteditable="plaintext-only" id="profileType" class="dynamic-profile-input" oninput="updateNote()">BYDEE BLACK COLOUR PROFILE</div>
+                </td>
+                <td class="col-right">
+                    <img id="companyLogo" style="max-width: 150px; max-height: 70px; display: none; margin-bottom: 10px; float: right;">
+                    <div style="clear: both;"></div>
+                    <div class="company-name">HR UPVC ENTERPRISES</div>
+                    <div style="margin-top:4px;">No. 326/122/1, Hosahalli Road, Near Muilk Dairy<br>
+                    Kodagalahalli, Hosahalli<br>
+                    Bangalore - 562157<br>
+                    Contact :- 7075510108<br>
+                    Email :- hrenterprisesupvc@gmail.com</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Mobile Wrapper for Horizontal Scrolling -->
+        <div class="table-responsive">
+            <table class="main-table" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 3%;">SL</th>
+                        <th style="width: 6%;">Window Code</th>
+                        <th style="width: 16%;">Profile & Window Type</th>
+                        <th style="width: 9%;">PROFILE COLOUR</th>
+                        <th style="width: 5%;">Width<br>(mm)</th>
+                        <th style="width: 5%;">Height<br>(mm)</th>
+                        <th style="width: 5%;">Area<br>(Sqft)</th>
+                        <th style="width: 4%;">Qty<br>(Nos)</th>
+                        <th style="width: 6%;">Total Area<br>(Sqft)</th>
+                        <th style="width: 5%;">ALU.<br>Mesh</th>
+                        <th style="width: 8%;">Handle<br>Type</th>
+                        <th style="width: 8%;">Glass</th>
+                        <th style="width: 6%;">BASE PRICE</th>
+                        <th style="width: 7%;">Unit Price</th>
+                        <th style="width: 7%;">Total Price</th>
+                        <th class="no-print action-col" style="width: 3%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td class="sl-no">1</td>
+                        <td><div contenteditable="plaintext-only" class="cell-text">CMD</div></td>
+                        <td><div contenteditable="plaintext-only" class="cell-text left-align" style="font-weight: bold;">CASEMENT DOOER</div></td>
+                        <td><div contenteditable="plaintext-only" class="cell-text">BLACK PROFILE</div></td>
+                        <td><input type="number" class="val-width" value="1265"></td>
+                        <td><input type="number" class="val-height" value="2209"></td>
+                        <td><div class="res-area readonly-cell"></div></td>
+                        <td><input type="number" class="val-qty" value="2"></td>
+                        <td><div class="res-tot-area readonly-cell"></div></td>
+                        <td><div contenteditable="plaintext-only" class="cell-text">NO</div></td>
+                        <td><div contenteditable="plaintext-only" class="cell-text">CYLINDER LOCK</div></td>
+                        <td><div contenteditable="plaintext-only" class="cell-text">CLEAR GLASS</div></td>
+                        <td><input type="number" class="val-base" value="1050"></td>
+                        <td><div class="res-unit-price readonly-cell"></div></td>
+                        <td><div class="res-tot-price readonly-cell"></div></td>
+                        <td class="no-print action-col"><button class="btn-delete" onclick="deleteRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background-color: #dce6ef;">
+                        <td colspan="7" style="text-align:right; padding-right:10px;">TOTAL</td>
+                        <td id="sum-qty">0</td>
+                        <td id="sum-area">0.00</td>
+                        <td colspan="6"></td>
+                        <td class="no-print action-col"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <table class="layout-table">
+            <tr>
+                <td class="layout-left">
+                    <div style="font-weight:bold; margin-bottom: 4px;">Note :- <span id="noteProfileText" style="color: #1a4a75;">BYDEE BLACK COLOUR PROFILE</span> IS CONSIDERED FOR THIS OFFER</div>
+                    <div style="font-weight:bold; margin-bottom: 8px; color: #1a4a75;">DUE TO THE FLUCTUATION OF RATES, THE ABOVE MENTIONED RATES ARE VALID ONLY FOR 7 DAYS</div>
+                    
+                    <div class="section-title">TERM AND CONDITIONS:</div>
+                    <ul class="terms-list">
+                        <li><strong>1.</strong> Please pay by Account payee cheque/cash in favour of <strong>"HR UPVC ENTERPRISES"</strong></li>
+                        <li><strong>2.</strong> Payment terms :- 75% Advance Along With Purchase Order and 25% after completing.</li>
+                        <li><strong>3.</strong> Delivery period :- 30 DAYS AFTER CONFIRMATION WITH ADVANCE</li>
+                        <li><strong>4.</strong> Interest @24% P.A will be charged if not paid within due date</li>
+                        <li><strong>5.</strong> Our responsibilities and risk ceases once good leave premises.</li>
+                        <li><strong>6.</strong> Good once sold will not be taken back under any circumstances.</li>
+                        <li><strong>7.</strong> Quotation is given on the present glass price subject to change incase the project is delayed beyond 45 days.</li>
+                        <li><strong>8.</strong> Installation will start immediately 2 days after delivery of material at site.</li>
+                        <li><strong>9.</strong> Submission of bills: Delivery are made against an Invoice-cum-Delivery chellan. Client or client representative has to acknowledge reciept of material without which delivery cannot be affected.</li>
+                        <li><strong>10.</strong> Material Handling and Storage: Adequate space for unloading and storage of material will be required at the site with requisute security arrangements. If between delivery of items at site and use, any damage or loss is caused to the material by any other contractor / supplier employed</li>
+                        <li><strong>11.</strong> Liability for safe keeping of material at site : The liability for safe keepng of material delivered at site is with the customer.</li>
+                    </ul>
+                </td>
+                
+                <td class="layout-right">
+                    <table class="totals-table">
+                        <tr><td class="totals-label">Total Cost Rs.:</td><td class="totals-value" id="final-cost">0.00</td></tr>
+                        <tr>
+                            <td class="totals-label">
+                                GST 
+                                <select id="gstRateOption" class="no-print" onchange="calculateAll()" style="font-family: inherit; font-weight: bold; margin-left: 5px;">
+                                    <option value="0.18">18%</option>
+                                    <option value="0.09">9%</option>
+                                    <option value="0">0%</option>
+                                </select>
+                                <span class="print-only" id="gstPrintLabel">18%</span>
+                            </td>
+                            <td class="totals-value" id="final-gst">0.00</td>
+                        </tr>
+                        <tr><td class="totals-label">Installation @ 20/sft</td><td class="totals-value" style="color:green;"><div contenteditable="plaintext-only" style="text-align: right; font-weight: bold; color: green; outline: none;">FREE</div></td></tr>
+                        <tr><td class="totals-label">Transportation</td><td class="totals-value"><input type="number" id="val-transport" value="2000" style="font-weight: bold;" oninput="calculateAll()"></td></tr>
+                        <tr><td class="totals-label" style="font-size:10pt; color:#1a4a75; background:#dce6ef;">Grand Total Rs.:</td><td class="totals-value" id="final-grand" style="font-size:10pt; color:#1a4a75; background:#dce6ef;">0.00</td></tr>
+                    </table>
+                    
+                    <div class="section-title">Account Details:</div>
+                    <table class="bank-table">
+                        <tr><th>Bank</th><td>ICICI Bank</td></tr>
+                        <tr><th>Account No</th><td><strong>231805001450</strong></td></tr>
+                        <tr><th>IFSC Code</th><td>ICIC0002318</td></tr>
+                        <tr><th>Holder Name</th><td>HR UPVC ENTERPRISES</td></tr>
+                        <tr><th>TYPE & ADDRESS</th><td>CAA (BAGULUR, KARNATAKA)</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table class="signature-table">
+            <tr>
+                <td style="text-align: left; padding-left: 10px;">
+                    _______________________________<br>AUTHORISED SIGNATURE
+                </td>
+                <td style="text-align: right; padding-right: 10px;">
+                    _______________________________<br>CUSTOMER SIGNATURE
+                </td>
+            </tr>
+        </table>
+
+        <div class="page-break">
+            <div class="section-title" style="font-size: 14pt; margin-bottom: 15px; padding-bottom: 5px;">Specifications</div>
+            
+            <p class="no-print" style="color: #4CAF50; font-weight: bold;">(Click inside the dashed box below to type or edit your specifications)</p>
+            <div contenteditable="true" class="editable-specs">
+                <ul style="list-style-type: square; padding-left: 15px;">
+                    <li>Clear Glass 5mm toughend</li>
+                    <li>Alluminium track provide</li>
+                    <li>Silicon Both Side provided</li>
+                    <li>GI 1mm</li>
+                    <li>1way blue/gray extra 40rs sqft</li>
+                    <li>2T OuterFrame 60, shash 66</li>
+                    <li>Casement outerframe 60, shash108</li>
+                </ul>
+            </div>
+            
+            <div style="padding: 15px; border: 1px dashed #d9534f; background-color: #fdf2f2; margin-bottom: 60px; margin-top: 20px;">
+                <ul class="disclaimer-list" style="font-size: 11pt; line-height: 1.6;">
+                    <li>IF THERE IS ANY WALL CROSS WE ARE NOT RESPONSIBLE THAT.</li>
+                    <li>WE ARE NOT FIX VENTILATOR EXHAUSTING FAN.</li>
+                    <li>Inside silicon provide and outside only silicon provided labour extra charge.</li>
+                </ul>
+            </div>
+            
+            <table class="signature-table">
+                <tr>
+                    <td style="text-align: left; padding-left: 10px;">
+                        _______________________________<br>AUTHORISED SIGNATURE
+                    </td>
+                    <td style="text-align: right; padding-right: 10px;">
+                        _______________________________<br>CUSTOMER SIGNATURE
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('input', calculateAll);
+
+        function updateNote() {
+            let profileInput = document.getElementById('profileType').innerText;
+            document.getElementById('noteProfileText').innerText = profileInput;
+        }
+
+        function loadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('companyLogo');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function calculateAll() {
+            let totalQty = 0;
+            let totalAreaSum = 0;
+            let totalCostSum = 0;
+
+            const rows = document.querySelectorAll('#tableBody tr');
+            
+            rows.forEach((row, index) => {
+                row.querySelector('.sl-no').innerText = index + 1;
+
+                let width = parseFloat(row.querySelector('.val-width').value) || 0;
+                let height = parseFloat(row.querySelector('.val-height').value) || 0;
+                let qty = parseFloat(row.querySelector('.val-qty').value) || 0;
+                let basePrice = parseFloat(row.querySelector('.val-base').value) || 0;
+
+                let area = (width * height) / 92903.04;
+                let totalArea = area * qty;
+                let unitPrice = area * basePrice;
+                let totalPrice = totalArea * basePrice;
+
+                row.querySelector('.res-area').innerText = area.toFixed(2);
+                row.querySelector('.res-tot-area').innerText = totalArea.toFixed(2);
+                row.querySelector('.res-unit-price').innerText = unitPrice.toFixed(2);
+                row.querySelector('.res-tot-price').innerText = totalPrice.toFixed(2);
+
+                totalQty += qty;
+                totalAreaSum += totalArea;
+                totalCostSum += totalPrice;
+            });
+
+            document.getElementById('sum-qty').innerText = totalQty;
+            document.getElementById('sum-area').innerText = totalAreaSum.toFixed(2);
+
+            let gstRate = parseFloat(document.getElementById('gstRateOption').value);
+            document.getElementById('gstPrintLabel').innerText = (gstRate * 100) + "%";
+
+            let transport = parseFloat(document.getElementById('val-transport').value) || 0;
+            let gst = totalCostSum * gstRate;
+            let grandTotal = totalCostSum + gst + transport;
+
+            const formatter = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            document.getElementById('final-cost').innerText = formatter.format(totalCostSum);
+            document.getElementById('final-gst').innerText = formatter.format(gst);
+            document.getElementById('final-grand').innerText = formatter.format(grandTotal);
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="sl-no"></td>
+                <td><div contenteditable="plaintext-only" class="cell-text">2T(SD)</div></td>
+                <td><div contenteditable="plaintext-only" class="cell-text left-align" style="font-weight: bold;">SLIDING DOOR (WITH OUT MESH)</div></td>
+                <td><div contenteditable="plaintext-only" class="cell-text">BLACK PROFILE</div></td>
+                <td><input type="number" class="val-width" value="0"></td>
+                <td><input type="number" class="val-height" value="0"></td>
+                <td><div class="res-area readonly-cell"></div></td>
+                <td><input type="number" class="val-qty" value="1"></td>
+                <td><div class="res-tot-area readonly-cell"></div></td>
+                <td><div contenteditable="plaintext-only" class="cell-text">NO</div></td>
+                <td><div contenteditable="plaintext-only" class="cell-text">POP UP HANDLE</div></td>
+                <td><div contenteditable="plaintext-only" class="cell-text">CLEAR GLASS</div></td>
+                <td><input type="number" class="val-base" value="750"></td>
+                <td><div class="res-unit-price readonly-cell"></div></td>
+                <td><div class="res-tot-price readonly-cell"></div></td>
+                <td class="no-print action-col"><button class="btn-delete" onclick="deleteRow(this)">X</button></td>
+            `;
+            tbody.appendChild(newRow);
+            calculateAll();
+        }
+
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateAll();
+        }
+
+        window.onload = () => {
+            calculateAll();
+            updateNote();
+        };
+    </script>
+</body>
+</html>
