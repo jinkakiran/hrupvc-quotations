@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- CRUCIAL FOR MOBILE: Forces the browser to scale to the device width -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR UPVC - Quotation Generator</title>
     <style>
@@ -17,7 +16,7 @@
             margin: 0;
         }
         .container {
-            max-width: 1122px;
+            max-width: 1122px; /* A4 Landscape width */
             margin: 0 auto;
             background: #fff;
             padding: 30px;
@@ -62,6 +61,17 @@
         }
         input[type="file"] { display: none; }
 
+        .type-select {
+            padding: 9px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #1a4a75;
+            border-radius: 4px;
+            background: #e6f0fa;
+            color: #1a4a75;
+            cursor: pointer;
+        }
+
         /* Dynamic Text Cells */
         .cell-text {
             width: 100%;
@@ -78,7 +88,6 @@
         .cell-text.left-align { text-align: left; }
         .cell-text:focus { border-color: #4CAF50; box-shadow: 0 0 3px rgba(76, 175, 80, 0.5); }
         
-        /* Number Inputs */
         input[type="number"] {
             width: 100%;
             padding: 4px;
@@ -122,6 +131,7 @@
             line-height: 1.6;
             outline: none;
         }
+        .editable-specs:focus { border: 1px solid #4CAF50; background-color: #fff; }
 
         /* --- DOCUMENT LAYOUT --- */
         .header-table { width: 100%; table-layout: fixed; border-bottom: 2px solid #1a4a75; margin-bottom: 10px; padding-bottom: 10px; }
@@ -139,14 +149,13 @@
         .info-label { font-weight: bold; white-space: nowrap; color: #444; width: 1%; padding-right: 5px;}
         .colon { width: 1%; padding-right: 5px; font-weight: bold;}
         
-        /* Mobile Scroll Wrapper */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 10px;
         }
-        
+
         .main-table { width: 100%; table-layout: fixed; border-collapse: collapse; min-width: 900px; }
         .main-table th { background-color: #1a4a75; color: #fff; font-weight: bold; text-align: center; padding: 6px 2px; border: 1px solid #0f304f; }
         .main-table td { border: 1px solid #ccc; padding: 2px; text-align: center; vertical-align: middle; word-wrap: break-word;}
@@ -168,24 +177,26 @@
         .bank-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed;}
         .bank-table th { background-color: #eef2f5; border: 1px solid #ccc; padding: 4px; text-align: left; width: 35%; }
         .bank-table td { border: 1px solid #ccc; padding: 4px; word-wrap: break-word;}
+        
         .disclaimer-list { list-style-type: disc; padding-left: 15px; margin: 0; color: #c9302c; font-weight: bold;}
         
-        .signature-table { width: 100%; margin-top: 30px; margin-bottom: 20px; border-collapse: collapse; table-layout: fixed;}
+        .signature-table { width: 100%; margin-top: 40px; margin-bottom: 20px; border-collapse: collapse; table-layout: fixed;}
         .signature-table td { width: 50%; font-weight: bold; font-size: 10pt; }
         
-        .page-break { page-break-before: always; padding-top: 20px; }
+        /* Dynamic flow section (No forced page breaks) */
+        .specs-section { padding-top: 10px; }
+        
         .print-only { display: none; }
         .watermark { display: none; }
         .global-seal { display: none; }
 
-        /* --- MOBILE SCREEN STYLES (Only affects screens under 800px) --- */
+        /* --- MOBILE SCREEN STYLES --- */
         @media screen and (max-width: 800px) {
             body { padding: 5px; font-size: 14px; }
             .container { padding: 15px; }
             .controls { display: flex; flex-direction: column; gap: 10px; }
-            .btn, .logo-upload-label { width: 100%; margin: 0; box-sizing: border-box; }
+            .btn, .logo-upload-label, .type-select { width: 100%; margin: 0; box-sizing: border-box; }
             
-            /* Stack layout tables on mobile */
             .header-table, .header-table tbody, .header-table tr, .header-table td { display: block; width: 100%; text-align: left; }
             .col-left, .col-center, .col-right { width: 100%; padding: 0; margin-bottom: 15px; }
             .col-center { text-align: left; }
@@ -212,7 +223,12 @@
             .no-print { display: none !important; }
             .print-only { display: inline !important; }
             
-            /* Reset Mobile overrides during print */
+            /* Prevent awkward slicing of blocks across pages */
+            .layout-table { page-break-inside: avoid; }
+            .specs-section { page-break-inside: avoid; }
+            .signature-table { page-break-inside: avoid; }
+            .main-table tr { page-break-inside: avoid; }
+            
             .header-table, .layout-table { display: table !important; }
             .header-table tbody, .header-table tr, .header-table td, .layout-table tbody, .layout-table tr, .layout-table td { display: table-cell !important; }
             .col-left { width: 33% !important; padding-right: 10px !important;}
@@ -288,30 +304,38 @@
     <div class="global-seal">*** THIS IS A COMPUTER-GENERATED DOCUMENT AND DOES NOT REQUIRE A PHYSICAL SIGNATURE ***</div>
 
     <div class="controls no-print">
+        <select id="quotationType" class="type-select" onchange="updateQuotationType()">
+            <option value="General">General Quotation</option>
+            <option value="Final">Final Quotation</option>
+        </select>
+
         <label class="logo-upload-label">
             📁 Upload Logo
             <input type="file" id="logoInput" accept="image/*" onchange="loadLogo(event)">
         </label>
+        
         <button class="btn btn-add" onclick="addRow()">+ Add New Item Row</button>
-        <button class="btn btn-print" onclick="window.print()">Save as PDF</button>
-        <p style="margin-top: 10px; font-weight: normal; color: #555;">Fill in your data and click Save as PDF. <br><strong style="color:#d9534f;">Mobile Note:</strong> Swipe left/right on the items table to see all columns.</p>
+        <button class="btn btn-print" onclick="saveAsPDF()">Save as PDF</button>
+        
+        <p style="margin-top: 10px; font-weight: normal; color: #555;">Fill in your data and click Save as PDF.<br><strong style="color:#d9534f;">Mobile Note:</strong> Swipe left/right on the items table to see all columns.</p>
     </div>
 
     <div class="container">
+        <!-- HEADER -->
         <table class="header-table">
             <tr>
                 <td class="col-left">
                     <div class="title-sub">CLIENT DETAILS</div>
                     <table class="info-table">
                         <tr><td class="info-label">Quotation No</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">MR/WTE/302/2026-27</div></td></tr>
-                        <tr><td class="info-label">Name</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Axiscade company</div></td></tr>
+                        <tr><td class="info-label">Name</td><td class="colon">:</td><td><div contenteditable="plaintext-only" id="clientName" class="cell-text left-align">Axiscade company</div></td></tr>
                         <tr><td class="info-label">Address</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
                         <tr><td class="info-label">Project</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">Airport</div></td></tr>
                         <tr><td class="info-label">Date</td><td class="colon">:</td><td><div contenteditable="plaintext-only" class="cell-text left-align">31-07-2026</div></td></tr>
                     </table>
                 </td>
                 <td class="col-center">
-                    <div class="title-main">QUOTATION</div>
+                    <div class="title-main" id="displayQuotationType">QUOTATION</div>
                     <div class="title-sub">uPVC Doors & Windows</div>
                     <div contenteditable="plaintext-only" id="profileType" class="dynamic-profile-input" oninput="updateNote()">BYDEE BLACK COLOUR PROFILE</div>
                 </td>
@@ -383,6 +407,7 @@
             </table>
         </div>
 
+        <!-- TOTALS & T&C -->
         <table class="layout-table">
             <tr>
                 <td class="layout-left">
@@ -437,18 +462,8 @@
             </tr>
         </table>
 
-        <table class="signature-table">
-            <tr>
-                <td style="text-align: left; padding-left: 10px;">
-                    _______________________________<br>AUTHORISED SIGNATURE
-                </td>
-                <td style="text-align: right; padding-right: 10px;">
-                    _______________________________<br>CUSTOMER SIGNATURE
-                </td>
-            </tr>
-        </table>
-
-        <div class="page-break">
+        <!-- Dynamic flowing specs (no forced page breaks) -->
+        <div class="specs-section">
             <div class="section-title" style="font-size: 14pt; margin-bottom: 15px; padding-bottom: 5px;">Specifications</div>
             
             <p class="no-print" style="color: #4CAF50; font-weight: bold;">(Click inside the dashed box below to type or edit your specifications)</p>
@@ -464,29 +479,60 @@
                 </ul>
             </div>
             
-            <div style="padding: 15px; border: 1px dashed #d9534f; background-color: #fdf2f2; margin-bottom: 60px; margin-top: 20px;">
+            <div style="padding: 15px; border: 1px dashed #d9534f; background-color: #fdf2f2; margin-bottom: 30px; margin-top: 20px;">
                 <ul class="disclaimer-list" style="font-size: 11pt; line-height: 1.6;">
                     <li>IF THERE IS ANY WALL CROSS WE ARE NOT RESPONSIBLE THAT.</li>
                     <li>WE ARE NOT FIX VENTILATOR EXHAUSTING FAN.</li>
                     <li>Inside silicon provide and outside only silicon provided labour extra charge.</li>
                 </ul>
             </div>
-            
-            <table class="signature-table">
-                <tr>
-                    <td style="text-align: left; padding-left: 10px;">
-                        _______________________________<br>AUTHORISED SIGNATURE
-                    </td>
-                    <td style="text-align: right; padding-right: 10px;">
-                        _______________________________<br>CUSTOMER SIGNATURE
-                    </td>
-                </tr>
-            </table>
         </div>
+        
+        <!-- Final Signature Block (Appears once at the end of the document) -->
+        <table class="signature-table">
+            <tr>
+                <td style="text-align: left; padding-left: 10px;">
+                    _______________________________<br>AUTHORISED SIGNATURE
+                </td>
+                <td style="text-align: right; padding-right: 10px;">
+                    _______________________________<br>CUSTOMER SIGNATURE
+                </td>
+            </tr>
+        </table>
     </div>
 
+    <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
         document.addEventListener('input', calculateAll);
+
+        // Save as PDF with Dynamic Naming and Mobile viewport trick
+        function saveAsPDF() {
+            let typeSelect = document.getElementById('quotationType').value;
+            let fileNameSuffix = typeSelect === 'General' ? 'Quotation' : 'Final_Quotation';
+            
+            let clientName = document.getElementById('clientName').innerText.trim().replace(/[^a-zA-Z0-9 -]/g, "") || "Client";
+            let profile = document.getElementById('profileType').innerText.trim().replace(/[^a-zA-Z0-9 -]/g, "") || "Profile";
+            
+            let oldTitle = document.title;
+            document.title = `${clientName}_${profile}_${fileNameSuffix}`;
+
+            let viewport = document.querySelector('meta[name="viewport"]');
+            let originalContent = viewport.content;
+            viewport.content = 'width=1122, maximum-scale=1.0';
+
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    document.title = oldTitle;
+                    viewport.content = originalContent;
+                }, 1000);
+            }, 300);
+        }
+
+        function updateQuotationType() {
+            let type = document.getElementById('quotationType').value;
+            document.getElementById('displayQuotationType').innerText = type === 'General' ? 'QUOTATION' : 'FINAL QUOTATION';
+        }
 
         function updateNote() {
             let profileInput = document.getElementById('profileType').innerText;
